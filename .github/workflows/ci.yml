@@ -41,7 +41,7 @@ jobs:
           host: ${{ secrets.LIGHTSAIL_HOST }}
           username: ${{ secrets.LIGHTSAIL_USERNAME }}
           key: ${{ secrets.LIGHTSAIT_SSH_KEY }}
-            script: |
+          script: |
             set -e
             cd ~/review-api
             git pull origin main
