@@ -40,15 +40,15 @@ jobs:
         with:
           host: ${{ secrets.LIGHTSAIL_HOST }}
           username: ${{ secrets.LIGHTSAIL_USERNAME }}
-          key: ${{ secrets.LIGHTSAIT_SSH_KEY }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             set -e
             cd ~/review_api
             git pull origin main
-            # 이전 방식(docker run)의 review 컨테이너가 8005를 쓰고 있으면 충돌하므로 먼저 지운다
+            docker build -t review_api .
             docker rm -f review || true
-            # down 하지 않고 up 만 한다. 그래야 DB 볼륨(저장된 데이터)이 유지된다
-            docker compose up --build -d
-            sleep 10
-            docker compose ps
-            curl -fsS http://localhost:8005/health && echo " <- 서버 정상 응답"
+            docker run -d --name review --restart unless-stopped \
+              -p 8005:8005 --env-file .env review_api
+            sleep 5
+            docker ps
+            curl -fsS http://localhost:8005/docs -o /dev/null && echo "서버 정상 응답"
